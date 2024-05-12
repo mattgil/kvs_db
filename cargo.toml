@@ -1,0 +1,6 @@
+[package]
+name = "kvs"
+version = "0.1.0"
+authors = ["Mateusz Gil <matgil92b@gmail.com>"]
+description = "A key-value store"
+edition = "2018"
