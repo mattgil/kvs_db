@@ -1,11 +1,11 @@
 pub struct KvStore {}
 
 impl KvStore {
-    pub fn new () -> Self {
+    pub fn new() -> Self {
         Self {}
     }
 
-    pub fn set (&mut self, _key: String, _val: String) {
+    pub fn set(&mut self, _key: String, _val: String) {
         panic!("unimplemented")
     }
 

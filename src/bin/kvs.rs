@@ -7,32 +7,31 @@ use kvs::KvStore;
 #[command(version, about, long_about=None)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands
+    command: Commands,
 }
 
 #[derive(Subcommand)]
 enum Commands {
     Get(GetArgs),
     Set(SetArgs),
-    Remove(RemoveArgs)
+    Remove(RemoveArgs),
 }
 
 #[derive(Args)]
 struct GetArgs {
-    key: Option<String>
+    key: Option<String>,
 }
 
 #[derive(Args)]
 struct SetArgs {
     key: Option<String>,
-    value: Option<String>
+    value: Option<String>,
 }
 
 #[derive(Args)]
 struct RemoveArgs {
-    key: Option<String>
+    key: Option<String>,
 }
-
 
 fn main() {
     let cli = Cli::parse();
@@ -40,17 +39,13 @@ fn main() {
     let mut kv_store = KvStore::new();
 
     match &cli.command {
-        Commands::Get(key) => {
-             match &key.key {
-                 Some(val) => {
-                    kv_store.get(val.to_string());
-                },
-                 None => panic!("key is required")
-             }
-            
+        Commands::Get(key) => match &key.key {
+            Some(val) => {
+                kv_store.get(val.to_string());
+            }
+            None => panic!("key is required"),
         },
         Commands::Set(args) => {
-            
             let key = &args.key;
             let value = &args.value;
             if let (Some(key), Some(value)) = (key, value) {
@@ -58,14 +53,10 @@ fn main() {
             } else {
                 panic!("key and value are required")
             }
-        },
-        Commands::Remove(key) => {
-            match &key.key {
-                Some(val) => {
-                    kv_store.remove(val.to_string())
-                },
-                None => panic!("key is required")
-            }
         }
+        Commands::Remove(key) => match &key.key {
+            Some(val) => kv_store.remove(val.to_string()),
+            None => panic!("key is required"),
+        },
     }
 }
