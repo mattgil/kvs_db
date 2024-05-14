@@ -1,7 +1,7 @@
-use std::num::NonZeroI128;
+use std::{num::NonZeroI128, path::Path};
 
 use clap::{builder::Str, Arg, Args, Parser, Subcommand};
-use kvs::KvStore;
+use kvs::{KvStore, KvStoreError, Result};
 
 #[derive(Parser)]
 #[command(version, about, long_about=None)]
@@ -33,15 +33,21 @@ struct RemoveArgs {
     key: Option<String>,
 }
 
-fn main() {
+fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    let mut kv_store = KvStore::new();
+let path = Path::new("log.db");
 
-    match &cli.command {
+    let mut kv_store = KvStore::open(path)?;
+
+    match &cli.command  {
         Commands::Get(key) => match &key.key {
             Some(val) => {
-                kv_store.get(val.to_string());
+               let val = kv_store.get(val.to_string())?;
+               match val {
+                   Some(val) => print!("{}", val),
+                   None => print!("Key not found")
+               }
             }
             None => panic!("key is required"),
         },
@@ -49,14 +55,15 @@ fn main() {
             let key = &args.key;
             let value = &args.value;
             if let (Some(key), Some(value)) = (key, value) {
-                kv_store.set(key.to_string(), value.to_string())
+                kv_store.set(key.to_string(), value.to_string())?
             } else {
                 panic!("key and value are required")
             }
         }
         Commands::Remove(key) => match &key.key {
-            Some(val) => kv_store.remove(val.to_string()),
+            Some(val) => kv_store.remove(val.to_string())?,
             None => panic!("key is required"),
         },
     }
+    panic!("bang")
 }
