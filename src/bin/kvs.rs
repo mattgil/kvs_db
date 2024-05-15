@@ -65,5 +65,5 @@ let path = Path::new("log.db");
             None => panic!("key is required"),
         },
     }
-    panic!("bang")
+    Ok(())
 }
