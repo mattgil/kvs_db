@@ -44,10 +44,7 @@ let path = Path::new("log.db");
         Commands::Get(key) => match &key.key {
             Some(val) => {
                let val = kv_store.get(val.to_string())?;
-               match val {
-                   Some(val) => print!("{}", val),
-                   None => print!("Key not found")
-               }
+                    print!("{}", val)
             }
             None => panic!("key is required"),
         },
