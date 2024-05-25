@@ -48,7 +48,7 @@ impl KvStore {
         }
     }
 
-    pub fn get(&mut self, key: String) -> Result<String> {
+    pub fn get(&mut self, key: String) -> Result<Option<String>> {
                 let mut command_list = String::new();
                 self.db_file.read_to_string(&mut command_list).unwrap();
                      let result = command_list
@@ -56,17 +56,17 @@ impl KvStore {
                     .map(|command| {
                         let command: Command = serde_json::from_str(command).unwrap();
                         command
-                    }).fold(String::from(""),|mut acc, command|{
+                    }).fold(Some(String::from("")),|mut acc, command|{
                         match command {
                            Command::Set {key: k, value} => {
                                if key == k {
-                                   acc = value
+                                   acc = Some(value)
                                }
                                acc
                            },
                            Command::Remove {key: k} => {
                             if key == k { 
-                                return String::from("")
+                                return None
                             }
                             acc
                            }
