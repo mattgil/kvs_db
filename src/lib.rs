@@ -1,4 +1,4 @@
-use std::{fs::{File, OpenOptions}, io::{Read, Write}, path::Path};
+use std::{fs::{File, OpenOptions}, io::{Read, Write}, path::{Path, PathBuf}, thread::panicking};
 
 use serde::{Deserialize, Serialize};
 
@@ -23,13 +23,16 @@ enum Command {
 
 impl KvStore {
     
-    pub fn open( path: &Path) -> Result<KvStore> {
-            let  file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .write(true)
-            .append(true)
-            .open(path);
+    pub fn open( path:  &Path) -> Result<KvStore> {
+        let mut final_path = PathBuf::new();
+        final_path.push(path);
+        final_path.push("log.db");
+        let  file = OpenOptions::new()
+        .create(true)
+        .read(true)
+        .write(true)
+        .append(true)
+        .open(final_path.as_path());
          match file {
             Ok(file) => Ok(Self{ db_file: file}),
             Err(err) => panic!("error {}",err.to_string())
@@ -56,7 +59,7 @@ impl KvStore {
                     .map(|command| {
                         let command: Command = serde_json::from_str(command).unwrap();
                         command
-                    }).fold(Some(String::from("")),|mut acc, command|{
+                    }).fold(None,|mut acc, command|{
                         match command {
                            Command::Set {key: k, value} => {
                                if key == k {

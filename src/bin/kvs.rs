@@ -14,7 +14,7 @@ struct Cli {
 enum Commands {
     Get(GetArgs),
     Set(SetArgs),
-    Remove(RemoveArgs),
+    Rm(RemoveArgs),
 }
 
 #[derive(Args)]
@@ -36,7 +36,7 @@ struct RemoveArgs {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-let path = Path::new("log.db");
+let path = Path::new("./");
 
     let mut kv_store = KvStore::open(path)?;
 
@@ -60,7 +60,7 @@ let path = Path::new("log.db");
                 panic!("key and value are required")
             }
         }
-        Commands::Remove(key) => match &key.key {
+        Commands::Rm(key) => match &key.key {
             Some(val) => kv_store.remove(val.to_string())?,
             None => panic!("key is required"),
         },
