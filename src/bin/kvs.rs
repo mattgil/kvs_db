@@ -45,8 +45,14 @@ let path = Path::new("./");
             Some(val) => {
                let val = kv_store.get(val.to_string())?;
                match val {
-                   Some(val) => println!("{}", val),
-                   None => println!("Key not found")
+                   Some(val) => {
+                        println!("{}", val); 
+                        Ok(())
+                    },
+                   None => {
+                        println!("Key not found");
+                        Ok(())
+                    }
                }
             }
             None => panic!("key is required"),
@@ -55,15 +61,29 @@ let path = Path::new("./");
             let key = &args.key;
             let value = &args.value;
             if let (Some(key), Some(value)) = (key, value) {
-                kv_store.set(key.to_string(), value.to_string())?
+                kv_store.set(key.to_string(), value.to_string())?;
+                Ok(())
             } else {
                 panic!("key and value are required")
             }
         }
         Commands::Rm(key) => match &key.key {
-            Some(val) => kv_store.remove(val.to_string())?,
+            
+            Some(val) => {
+                let key_check = kv_store.get(val.to_string())?;
+                match key_check {
+                    Some(_) => {
+                        kv_store.remove(val.to_string())?;
+                        Ok(())
+                    },
+                    None => {
+                        println!("Key not found");
+                        Err(KvStoreError)
+                    }
+                }
+            }
             None => panic!("key is required"),
         },
     }
-    Ok(())
+    
 }
